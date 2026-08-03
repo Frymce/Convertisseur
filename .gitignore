@@ -1,0 +1,25 @@
+# Dependencies
+**/node_modules/
+
+# Build outputs
+frontend/build/
+**/dist/
+
+# Backend storage
+backend/storage/
+backend/temp_uploads/
+backend/outputs/
+
+# IDE
+.vscode/
+.idea/
+.kilo/
+
+# Logs
+*.log 
+npm-debug.log
+# Misc
+.DS_Store
+.env
+.env.local
+.env.*
