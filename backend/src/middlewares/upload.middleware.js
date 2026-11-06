@@ -19,9 +19,28 @@ const storage = multer.diskStorage({
   },
 });
 
+const ALLOWED_MIME_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'image/bmp',
+  'image/heic',
+  'image/heif',
+];
+
+const fileFilter = (req, file, cb) => {
+  if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error(`File type not allowed: ${file.mimetype}`), false);
+  }
+};
+
 export const upload = multer({
   storage,
   limits: {
     fileSize: 50 * 1024 * 1024,
   },
+  fileFilter,
 });

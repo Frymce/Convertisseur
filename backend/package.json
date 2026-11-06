@@ -7,11 +7,9 @@
     "start": "node src/app.js",
     "dev": "node --watch src/app.js",
     "test": "jest --passWithNoTests",
-    "lint": "eslint src",
-    "sonar": "node sonar-project.js"
+    "lint": "eslint src"
   },
   "dependencies": {
-    "body-parser": "^2.3.0",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "fs-extra": "^11.2.0",

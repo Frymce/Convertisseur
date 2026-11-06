@@ -27,7 +27,7 @@ export default function PhotoUpload({ onFileSelect, dragging, onDragOver, onDrag
         <h3 className="text-2xl font-semibold mb-2">Drop your images here</h3>
         <p className="text-[#464554] mb-12">{dragging ? '📂 Release to upload!' : 'or click to browse from your device'}</p>
         <div className="flex gap-2 flex-wrap justify-center opacity-60 group-hover:opacity-100 transition-opacity">
-          {['JPG', 'PNG', 'WEBP', 'HEIC', 'AVIF', 'BMP', 'GIF'].map(fmt => (
+          {['JPG', 'PNG', 'WEBP', 'HEIC', 'BMP', 'GIF'].map(fmt => (
             <span key={fmt} className="px-2 py-1 bg-[#d3e4fe] rounded text-xs font-semibold">{fmt}</span>
           ))}
         </div>
