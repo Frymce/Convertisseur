@@ -13,7 +13,7 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/frontend"
+      "dest": "/frontend/$1"
     }
   ],
   "github": {

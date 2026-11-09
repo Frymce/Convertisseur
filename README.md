@@ -1,4 +1,4 @@
-# Convertisseur d'Images — PixelShift
+# Convertisseur d'Images — ConvLocal
 
 Application web de conversion d'images avec architecture distribuée :
 

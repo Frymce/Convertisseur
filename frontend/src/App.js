@@ -1,6 +1,8 @@
 import { useState, useCallback, useRef } from 'react';
 import './App.css';
 import { convertImage } from './services/imageConverter';
+import { uploadConvertedFile, getDownloadUrl } from './services/api';
+import logo from './assets/logo.png';
 
 const FORMATS = ['jpeg', 'png', 'webp', 'gif', 'bmp'];
 
@@ -46,6 +48,10 @@ const triggerDownload = (blob, fileName) => {
 // ─── Carte résultat ──────────────────────────────────────────────────────────
 function ResultCard({ item, onRemove }) {
   const [dlState, setDlState] = useState('idle');
+  // shareState : 'idle' | 'loading' | 'done' | 'error'
+  const [shareState, setShareState] = useState('idle');
+  const [shareUrl, setShareUrl] = useState(null);
+  const [copied, setCopied] = useState(false);
 
   const handleDownload = async () => {
     if (dlState !== 'idle') return;
@@ -53,6 +59,30 @@ function ResultCard({ item, onRemove }) {
     await triggerDownload(item.blob, item.fileName);
     setDlState('done');
     setTimeout(() => setDlState('idle'), 2000);
+  };
+
+  const handleShare = async () => {
+    if (shareState === 'loading') return;
+    // Si l'URL existe déjà, on retoggle l'affichage
+    if (shareUrl) { setShareUrl(null); return; }
+
+    setShareState('loading');
+    try {
+      const data = await uploadConvertedFile(item.blob, item.fileName);
+      const url = getDownloadUrl(data.fileId);
+      setShareUrl(url);
+      setShareState('done');
+    } catch {
+      setShareState('error');
+      setTimeout(() => setShareState('idle'), 3000);
+    }
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
   };
 
   const size =
@@ -78,6 +108,8 @@ function ResultCard({ item, onRemove }) {
       <div className="p-3 flex flex-col gap-2">
         <p className="text-sm font-medium text-[#0b1c30] truncate" title={item.fileName}>{item.fileName}</p>
         <p className="text-xs text-[#767586]">{size}</p>
+
+        {/* Boutons Download + Share + Delete */}
         <div className="flex gap-2">
           <button
             onClick={handleDownload}
@@ -87,6 +119,26 @@ function ResultCard({ item, onRemove }) {
             {dlState === 'loading' && <><span className="material-symbols-outlined animate-spin" style={{ fontSize: '16px' }}>progress_activity</span>Saving…</>}
             {dlState === 'done' && <><span className="material-symbols-outlined" style={{ fontSize: '16px' }}>check</span>Done</>}
           </button>
+
+          {/* Bouton Partager */}
+          <button
+            onClick={handleShare}
+            title="Générer un lien de partage"
+            className={`p-2 rounded-lg transition-colors ${
+              shareState === 'loading' ? 'text-[#4648d4] bg-[#e5eeff]' :
+              shareState === 'done'    ? 'text-[#006a61] bg-[#e8f5f3]' :
+              shareState === 'error'   ? 'text-[#ba1a1a] bg-[#ffdad6]/30' :
+              'text-[#767586] hover:text-[#4648d4] hover:bg-[#e5eeff]'
+            }`}
+          >
+            {shareState === 'loading'
+              ? <span className="material-symbols-outlined animate-spin" style={{ fontSize: '18px' }}>progress_activity</span>
+              : shareState === 'error'
+              ? <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>error</span>
+              : <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>share</span>
+            }
+          </button>
+
           <button
             onClick={onRemove}
             className="p-2 text-[#767586] hover:text-[#ba1a1a] hover:bg-[#ffdad6]/30 rounded-lg transition-colors"
@@ -95,6 +147,25 @@ function ResultCard({ item, onRemove }) {
             <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>delete</span>
           </button>
         </div>
+
+        {/* Lien de partage */}
+        {shareUrl && (
+          <div className="mt-1 bg-[#f0f4ff] border border-[#c7c4d7] rounded-lg p-2 flex items-center gap-2">
+            <span className="text-xs text-[#464554] truncate flex-grow font-mono">{shareUrl}</span>
+            <button
+              onClick={handleCopy}
+              title="Copier le lien"
+              className="flex-shrink-0 text-[#4648d4] hover:text-[#6063ee] transition-colors"
+            >
+              <span className="material-symbols-outlined" style={{ fontVariationSettings: copied ? "'FILL' 1" : "'FILL' 0", fontSize: '16px' }}>
+                {copied ? 'check' : 'content_copy'}
+              </span>
+            </button>
+          </div>
+        )}
+        {shareState === 'error' && (
+          <p className="text-xs text-[#ba1a1a]">Erreur — backend inaccessible</p>
+        )}
       </div>
     </div>
   );
@@ -255,9 +326,8 @@ export default function App() {
       {/* ── Navbar ── */}
       <header className="sticky top-0 z-50 bg-[#f8f9ff]/80 backdrop-blur-md border-b border-[#e0e0f0]">
         <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#4648d4] text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>layers</span>
-            <span className="text-xl font-bold text-[#4648d4]">PixelShift</span>
+          <div className="flex items-center">
+            <img src={logo} alt="ConvLocal" className="h-40 w-auto" />
           </div>
           <span className="text-xs text-[#767586] hidden sm:block">Conversion d'images côté client — aucun upload vers un serveur</span>
         </div>
@@ -434,8 +504,11 @@ export default function App() {
       </main>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-[#e0e0f0] py-5 px-6 text-center text-xs text-[#767586]">
-        <span className="font-semibold text-[#4648d4]">PixelShift</span> · Conversion locale dans votre navigateur · Aucune image envoyée sur un serveur · © 2024
+      <footer className="border-t border-[#e0e0f0] py-1 px-6 text-center text-xs text-[#767586]">
+        <div className="flex items-center justify-center gap-2">
+          <img src={logo} alt="ConvLocal" className="h-20 w-auto" />
+          <span>· Conversion locale dans votre navigateur · Le partage par lien utilise un serveur temporaire (30 min) · © 2024</span>
+        </div>
       </footer>
     </div>
   );

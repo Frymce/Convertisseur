@@ -28,7 +28,7 @@ export default function HomeView({
               Convert your photos with <span className="text-[#4648d4]">surgical precision.</span>
             </h1>
             <p className="text-lg text-[#464554] max-w-xl">
-              PixelShift handles batch image conversion, compression, and formatting in seconds. No quality loss, no complicated settings. Just drop and download.
+              ConvLocal handles batch image conversion, compression, and formatting in seconds. No quality loss, no complicated settings. Just drop and download.
             </p>
             <div className="flex flex-wrap gap-4 items-center">
               <div className="flex -space-x-2">
@@ -176,7 +176,7 @@ export default function HomeView({
           <div className="order-1 lg:order-2">
             <h2 className="text-[32px] font-semibold leading-10 mb-4">Universal compatibility. Zero compromises.</h2>
             <p className="text-[#464554] text-base mb-6">
-              PixelShift was built for developers, designers, and social media managers who need fast results without sacrificing image integrity.
+              ConvLocal was built for developers, designers, and social media managers who need fast results without sacrificing image integrity.
             </p>
             <ul className="space-y-2">
               {['Lossless conversion for PNG and TIFF', 'Smart metadata preservation', 'Customizable resizing and cropping'].map(item => (
@@ -196,7 +196,7 @@ export default function HomeView({
           <div className="relative z-10 max-w-2xl mx-auto">
             <h2 className="text-[48px] font-bold leading-[56px] mb-4">Ready to shift your workflow?</h2>
             <p className="text-[#767586] text-lg mb-12">
-              Join thousands of users who have optimized their image pipeline with PixelShift. Start your first conversion for free.
+              Join thousands of users who have optimized their image pipeline with ConvLocal. Start your first conversion for free.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="bg-[#6063ee] text-white px-12 py-4 rounded-xl text-2xl font-semibold hover:shadow-2xl transition-all active:scale-95">
